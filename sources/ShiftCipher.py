@@ -22,24 +22,13 @@ def main():
 
 def shift(text, key, decrypt=False):
     key_size = len(CHARACTERS)
-
-    def enc(char):
-        return CHARACTERS[(CHARACTERS.index(char) + key) % key_size]
-
-    def dec(char):
-        return CHARACTERS[(CHARACTERS.index(char) - key) % key_size]
-
     translated = ''
     if decrypt:
-        for i in text:
-            if i in CHARACTERS:
-                i = dec(i)
-            translated += i
-    else:
-        for i in text:
-            if i in CHARACTERS:
-                i = enc(i)
-            translated += i
+        key *= -1
+    for char in text:
+        if char in CHARACTERS:
+            char = CHARACTERS[(CHARACTERS.index(char) + key) % key_size]
+        translated += char
 
     return translated
 
