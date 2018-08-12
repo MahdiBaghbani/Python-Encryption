@@ -1,5 +1,6 @@
 import argparse
-from sources.io_library import reader, writer
+
+import io_library
 
 
 def main():
@@ -9,9 +10,9 @@ def main():
     parser.add_argument('-t', '--text', help='Text to be encrypted')
     args = parser.parse_args()
     if args.input and args.output:
-        x = reader(args.input, 't')
+        x = io_library.reader(args.input, 't')
         y = reverse(x)
-        writer(args.output, y, 't')
+        io_library.writer(args.output, y, 't')
     elif args.text:
         print(reverse(args.text))
 
