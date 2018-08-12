@@ -6,8 +6,8 @@ from Characters import CHARACTERS
 
 def main():
     parser = argparse.ArgumentParser(description='This is Shift Cipher module')
-    parser.add_argument('-i', '--input', help='Input file name')
-    parser.add_argument('-o', '--output', help='Output file name')
+    parser.add_argument('-i', '--input', help='Input file path')
+    parser.add_argument('-o', '--output', help='Output file path')
     parser.add_argument('-t', '--text', help='Text to be encrypted')
     parser.add_argument('-k', '--key', type=int, help='Key for encryption', required=True)
     parser.add_argument('-d', '--decrypt', action='store_true', default=False, help='Decryption switch')

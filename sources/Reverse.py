@@ -5,8 +5,8 @@ import io_library
 
 def main():
     parser = argparse.ArgumentParser(description='This is Reverse Cipher module')
-    parser.add_argument('-i', '--input', help='Input file name')
-    parser.add_argument('-o', '--output', help='Output file name')
+    parser.add_argument('-i', '--input', help='Input file path')
+    parser.add_argument('-o', '--output', help='Output file path')
     parser.add_argument('-t', '--text', help='Text to be encrypted')
     args = parser.parse_args()
     if args.input and args.output:
