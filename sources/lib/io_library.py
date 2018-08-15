@@ -1,8 +1,13 @@
 import pickle
 
 
-def reader(path, mode):
-    """ Wrapper for various reading from file methods """
+def reader(path: str, mode: str):
+    """ Wrapper for various methods to read data from a file
+
+    :param path: path to the file
+    :param mode: 't' for text file, 'b' for binary and 'p' for pickle
+    :return: read content
+    """
 
     def text_reader(p):
         """ Reads in all of a textual file """
@@ -31,8 +36,12 @@ def reader(path, mode):
         return pickle_reader(path)
 
 
-def writer(path, data, mode):
-    """ Wrapper for various writing to file methods """
+def writer(path: str, data, mode: str):
+    """ Wrapper for various methods to write data to a file
+    :param path: path to the file
+    :param data: data to be writen in file
+    :param mode: 't' for text file, 'b' for binary and 'p' for pickle
+    """
 
     def text_writer(p, d):
         """ Writes out text to a file """

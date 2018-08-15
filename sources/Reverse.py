@@ -1,6 +1,6 @@
 import argparse
 
-import io_library
+from lib import io_library
 
 
 def main():
