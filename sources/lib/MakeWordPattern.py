@@ -1,10 +1,10 @@
 import pprint
 
-import io_library
+from lib import io_library
 
 
 def main():
-   make_word_pattern()
+    make_word_pattern()
 
 
 def get_word_pattern(word):
@@ -40,7 +40,7 @@ def make_word_pattern():
     make_pattern_dictionary(word_list, all_patterns, False)
     make_pattern_dictionary(word_list, all_patterns, True)
 
-    fo = open('wordPatternsTitle.py', 'w')
+    fo = open('wordPatterns.py', 'w')
     fo.write('allPatterns = ')
     fo.write(pprint.pformat(all_patterns))
     fo.close()

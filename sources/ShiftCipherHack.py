@@ -4,10 +4,12 @@ import ShiftCipher
 from lib import io_library
 from lib import TrueTextDetector
 from lib import FrequencyAnalyzer
+from lib import WordPatternAnalyzer
 from lib.FrequencyAnalyzer import ETAOIN
 from lib.Characters import LETTERS
 
 failed = "FAILED TO HACK CIPHER\n"
+
 
 def main():
     parser = argparse.ArgumentParser(description='This is Shift Cipher Hack module')
@@ -31,7 +33,8 @@ def main():
         raise ValueError("you have to define arguments [-i -o] or -t\n")
 
 
-def shift_hack(cipher_text: str, letter_sequence: str, seed: int, bruteforce: bool = True, frequency_analyzer: bool = False, verbose: bool = False) -> str:
+def shift_hack(cipher_text: str, letter_sequence: str, seed: int, bruteforce: bool = True,
+               frequency_analyzer: bool = False, verbose: bool = False) -> str:
     if bruteforce:
         if seed:
             for i in range(seed):
@@ -49,10 +52,10 @@ def shift_hack(cipher_text: str, letter_sequence: str, seed: int, bruteforce: bo
 
 
 def analyze(cipher_text):
-    words = TrueTextDetector.load_dictionary(r'lib/dictionary_en.txt')
+    # words = TrueTextDetector.load_dictionary(r'lib/dictionary_en.txt')
     frequency = FrequencyAnalyzer.get_frequency_order(cipher_text)
     cipher_text = cipher_text.replace(frequency[0], ETAOIN[0])
-    comb = frequency[1:7]
+    """comb = frequency[1:7]
     comb = combination(comb)
     plain = ''
     for seq in comb:
@@ -60,9 +63,9 @@ def analyze(cipher_text):
         for i in range(6):
             temp = temp.replace(seq[i], ETAOIN[i+1])
         if TrueTextDetector.is_true_text(temp, words, 2, 2):
-            plain += temp + '\n\n\n\n\n'
+            plain += temp + '\n\n\n\n\n'"""
 
-    return plain
+    return str(WordPatternAnalyzer.hack_simple_sub(cipher_text))
 
 
 def combination(string):
@@ -77,11 +80,11 @@ def heap_permute(string, x, ls: list):
         ls.append(string)
     else:
         for i in range(x):
-            heap_permute(string, x-1, ls)
+            heap_permute(string, x - 1, ls)
             if x % 2 == 0:
-                string = swap(string, 0, x-1)
+                string = swap(string, 0, x - 1)
             else:
-                string = swap(string, i, x-1)
+                string = swap(string, i, x - 1)
 
 
 def swap(target, first: int, second: int, string: bool = True):
@@ -90,6 +93,7 @@ def swap(target, first: int, second: int, string: bool = True):
         target[first] = target[second]
         target[second] = temp
         return target
+
     if string:
         target = list(target)
         target = action()
