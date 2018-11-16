@@ -56,13 +56,13 @@ class Shift:
 def shift(text: str, key: int, letter_sequence: str, seed: int, shuffle: bool, decrypt: bool = False) -> str:
     """
         Function to shift letters
-        :param text : input text
+        :param text : text to be shifted
         :param key: key for shifting
         :param letter_sequence: the letter sequence the will be shifted with respect of the key
         :param seed: randomizes the letter sequence by shuffling it
         :param shuffle: flag for using shuffle
         :param decrypt: reverse the key to decrypt
-        :return translated string
+        :return shifted text
     """
 
     key_size = len(letter_sequence)  # this is our key space
