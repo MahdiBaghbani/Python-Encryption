@@ -17,6 +17,8 @@ def get_letter_count(string: str) -> dict:
         if letter in LETTERS:
             letter_count[letter] += 1
 
+    letter_count.default_factory = None
+
     return letter_count
 
 
@@ -30,6 +32,8 @@ def get_frequency_order(string: str) -> str:
     frequency = defaultdict(list)
     for i in letter_count:
         frequency[letter_count[i]].append(i)
+
+    frequency.default_factory = None
 
     # sort every list in dictionary and replace them by
     #  a string containing items in that list
