@@ -1,11 +1,12 @@
 import argparse
+
 from lib import io_library
 from lib.Characters import LETTERS_AND_SPACE
 
 
 def main():
-    """ Function to run program from Terminal
-    """
+    """ Wrapper for executing program in terminal """
+
     parser = argparse.ArgumentParser(description='This is True Text Detector module')
     source = parser.add_mutually_exclusive_group(required=True)
     source.add_argument('-i', '--input', help='Input file path')
@@ -14,7 +15,9 @@ def main():
     parser.add_argument('-w', '--word', type=int, default=20, help='Word percentage threshold')
     parser.add_argument('-l', '--letter', type=int, default=85, help='Letter percentage threshold')
     args = parser.parse_args()
+
     word_set = load_dictionary(args.dictionary)
+
     if args.input:
         message = io_library.reader(args.input, 't')
     elif args.text:
@@ -25,65 +28,49 @@ def main():
         print("False")
 
 
-def is_true_text(message: str, words: set, word_percentage: int = 20, letter_percentage: int = 85) -> bool:
-    """ Function to determine if the given string is proper text or not
-    you can adjust sensitivity and overwrite default threshold percentage
-
-    :param message: string to be examined
-    :param words: set of words
-    :param word_percentage: minimum words threshold
-    :param letter_percentage: minimum letter in string threshold
-    :rtype: bool
-    """
-    words_match = get_words_count(message, words) * 100 >= word_percentage
-    num_letters = len(remove_non_letters(message))
-    message_letters_percentage = num_letters / len(message) * 100
-    letters_match = message_letters_percentage >= letter_percentage
-
-    return words_match and letters_match
-
-
 def load_dictionary(file: str) -> set:
-    """ Function to load dictionary file's words into a set
+    """
+    Function to load dictionary file's words into a set
 
     :param file: path to dictionary file
     :return: set of dictionary words
     :rtype: set
     """
     dictionary = io_library.reader(file, 't').split('\n')
-    words = set()
-    for word in dictionary:
-        words.add(word)
+    words = {word for word in dictionary}
 
     return words
 
 
-def remove_non_letters(message: str):
-    """ Function to remove everything but alphabet
-     letters from a given string
-
-    :param message: string
-    :return: cleaned string
+def is_true_text(string: str, words: set, word_percentage: int = 20, letter_percentage: int = 85) -> bool:
     """
-    letters_only = list()
-    for symbol in message:
-        if symbol in LETTERS_AND_SPACE:
-            letters_only.append(symbol)
+    Function to determine if the given string is proper text or not
+    you can adjust sensitivity and overwrite default threshold percentage
 
-    return ''.join(letters_only)
+    :param string: string to be examined
+    :param words: set of words
+    :param word_percentage: minimum words threshold
+    :param letter_percentage: minimum letter in string threshold
+    :rtype: bool
+    """
+    words_match = get_words_count(string, words) * 100 >= word_percentage
+    letters_match = len(remove_non_letters(string)) / len(string) * 100 >= letter_percentage
+
+    return words_match and letters_match
 
 
-def get_words_count(message: str, words: set):
-    """ Function to count matches between words in
-     a string and a dictionary set
+def get_words_count(string: str, words: set):
+    """
+    Function to count matches between words in
+    a string and a dictionary set
 
-    :param message: string to be examined
+    :param string: string to be examined
     :param words: dictionary set
     :return: ratio matches/all words
     """
-    message = message.upper()
-    message = remove_non_letters(message)
-    possible_words = message.split()
+    string = string.upper()
+    string = remove_non_letters(string)
+    possible_words = string.split()
     if not possible_words:
         return 0.0
     matches = 0
@@ -92,6 +79,20 @@ def get_words_count(message: str, words: set):
             matches += 1
 
     return matches / len(possible_words)
+
+
+def remove_non_letters(string: str):
+    """
+    Function to remove everything but alphabet
+    letters from a given string
+
+    :param string: string
+    :return: cleaned string
+    """
+
+    letters_only = [symbol for symbol in string if symbol in LETTERS_AND_SPACE]
+
+    return ''.join(letters_only)
 
 
 if __name__ == '__main__':
