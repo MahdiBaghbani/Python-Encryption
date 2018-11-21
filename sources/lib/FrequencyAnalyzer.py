@@ -1,11 +1,24 @@
+import argparse
 from collections import defaultdict
 
 from lib.Characters import LETTERS, ETAOIN, ETAOIN_ALL
+from lib import io_library
 
-englishLetterFreq = {'E': 12.70, 'T': 9.06, 'A': 8.17, 'O': 7.51, 'I': 6.97, 'N': 6.75, 'S': 6.33, 'H': 6.09,
-                     'R': 5.99, 'D': 4.25, 'L': 4.03, 'C': 2.78, 'U': 2.76, 'M': 2.41, 'W': 2.36, 'F': 2.23,
-                     'G': 2.02, 'Y': 1.97, 'P': 1.93, 'B': 1.29, 'V': 0.98, 'K': 0.77, 'J': 0.15, 'X': 0.15,
-                     'Q': 0.10, 'Z': 0.07}
+
+def main():
+    """ Wrapper for executing program in terminal """
+
+    parser = argparse.ArgumentParser(description='This is Frequency Analyzer program')
+    parser.add_argument('-i', '--input', help='Input file path')
+    parser.add_argument('-o', '--output', help='Output file path')
+    parser.add_argument('-t', '--text', help='Text to be encrypted')
+    args = parser.parse_args()
+
+    if args.input and args.output:
+        text = io_library.reader(args.input, 't')
+        print("Calculated score for the input is: {}/14".format(english_freq_match_score(text)))
+    elif args.text:
+        print("Calculated score for the input is: {}/14".format(english_freq_match_score(args.text)))
 
 
 def get_letter_count(string: str) -> dict:
