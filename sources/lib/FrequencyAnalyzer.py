@@ -70,7 +70,7 @@ def english_freq_match_score(string: str) -> int:
         if commonLetter in freq_order[: 7]:
             match_score += 1
     for uncommonLetter in ETAOIN[-7:]:
-        if uncommonLetter in freq_order[: -8: -1]:
+        if uncommonLetter in freq_order[-7:]:
             match_score += 1
 
     return match_score
