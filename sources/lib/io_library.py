@@ -1,4 +1,11 @@
+import os.path as opath
 import pickle
+
+
+def check_path(path: str):
+
+    if not opath.isfile(path):
+        raise FileNotFoundError
 
 
 def reader(path: str, mode: str):
@@ -27,6 +34,8 @@ def reader(path: str, mode: str):
         with open(p, 'rb') as read:
             data = pickle.loads(read.read())
         return data
+
+    check_path(path)
 
     if mode is 't':
         return text_reader(path)
@@ -60,6 +69,8 @@ def writer(path: str, data, mode: str):
 
         with open(p, 'wb+') as write:
             pickle.dump(d, write, pickle.HIGHEST_PROTOCOL)
+
+    check_path(path)
 
     if mode is 't':
         text_writer(path, data)
