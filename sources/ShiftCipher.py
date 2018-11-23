@@ -25,6 +25,8 @@ def main():
         io_library.writer(args.output, y, 't')
     elif args.text:
         print(shift(args.text, args.key, args.letters, args.seed, args.noShuffle, args.decrypt))
+    else:
+        raise ValueError("You have to define arguments [-i -o] or -t\n")
 
 
 class Shift:

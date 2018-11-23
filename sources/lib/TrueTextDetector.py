@@ -22,6 +22,9 @@ def main():
         message = io_library.reader(args.input, 't')
     elif args.text:
         message = args.text
+    else:
+        raise ValueError("You have to define arguments [-i -o] or -t\n")
+
     if is_true_text(message, word_set, args.word, args.letter):
         print('True')
     else:

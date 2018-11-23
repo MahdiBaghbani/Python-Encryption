@@ -18,6 +18,8 @@ def main():
         io_library.writer(args.output, y, 't')
     elif args.text:
         print(reverse(args.text))
+    else:
+        raise ValueError("You have to define arguments [-i -o] or -t\n")
 
 
 def reverse(text: str):
