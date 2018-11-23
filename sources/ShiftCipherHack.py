@@ -1,54 +1,91 @@
 import argparse
 
 import ShiftCipher
-from lib import io_library
-from lib import TrueTextDetector
 from lib import FrequencyAnalyzer
+from lib import TrueTextDetector
 from lib import WordPatternAnalyzer
-from lib.FrequencyAnalyzer import ETAOIN
+from lib import io_library
 from lib.Characters import LETTERS
+from lib.FrequencyAnalyzer import ETAOIN
 
 failed = "FAILED TO HACK CIPHER\n"
 
 
 def main():
+    """ Wrapper for executing program in terminal """
+
     parser = argparse.ArgumentParser(description='This is Shift Cipher Hack module')
     parser.add_argument('-i', '--input', help='Input file path')
     parser.add_argument('-o', '--output', help='Output file path')
     parser.add_argument('-t', '--text', help='Text to be encrypted')
-    parser.add_argument('-l', '--letters', type=str, help='letters sequence', default=LETTERS)
+    parser.add_argument('-l', '--letters', type=str, help='letter sequence', default=LETTERS)
+    parser.add_argument('-d', '--dictionary', type=str, help='dictionary Path',
+                        default=r"dictionaries/english.txt")
     parser.add_argument('-v', '--verbose', action='store_true', default=False, help='Show hacking process')
-    parser.add_argument('-s', '--seed', type=int, help='Specify random seed for shuffling letter sequence')
+    parser.add_argument('-s', '--seed', type=int, help='Specify random seed for shuffling letter sequence', default=0)
     group = parser.add_mutually_exclusive_group(required=True)
     group.add_argument('-b', '--bruteForce', action='store_true', help='Brute-Force technique')
     group.add_argument('-f', '--frequencyAnalyzer', action='store_true', help='Frequency analyzing technique')
     args = parser.parse_args()
+
     if args.input and args.output:
         x = io_library.reader(args.input, 't')
-        y = shift_hack(x, args.letters, args.seed, args.bruteForce, args.frequencyAnalyzer, args.verbose)
+        y = shift_hack(x, args.letters, args.seed, args.dictionary, args.bruteForce, args.frequencyAnalyzer,
+                       args.verbose)
         io_library.writer(args.output, y, 't')
+
     elif args.text:
-        print(shift_hack(args.text, args.letters, args.seed, args.bruteForce, args.frequencyAnalyzer, args.verbose))
+        print(shift_hack(args.text, args.letters, args.seed, args.dictionary, args.bruteForce, args.frequencyAnalyzer,
+                         args.verbose))
+
     else:
-        raise ValueError("you have to define arguments [-i -o] or -t\n")
+        raise ValueError("You have to define arguments [-i -o] or -t\n")
 
 
-def shift_hack(cipher_text: str, letter_sequence: str, seed: int, bruteforce: bool = True,
+def shift_hack(cipher_text: str, letter_sequence: str, seed: int, dictionary_path: str, bruteforce: bool = True,
                frequency_analyzer: bool = False, verbose: bool = False) -> str:
+    """ Function to handle hack procedure"""
+
     if bruteforce:
+        # maximum seed for bruteforce
         if seed:
             for i in range(seed):
+                # show output
                 if verbose:
                     print("seed => {}".format(i))
-                plain_text = brute_force(cipher_text, letter_sequence, i, False, verbose)
+                # bruteforce
+                plain_text = brute_force(cipher_text, letter_sequence, i, dictionary_path, False, verbose)
+                # return hacked text
                 if plain_text != failed:
                     return plain_text
+            # nothing found
             return failed
         else:
-            return brute_force(cipher_text, letter_sequence, 0, True, verbose)
+            # bruteforce
+            return brute_force(cipher_text, letter_sequence, seed, dictionary_path, True, verbose)
+
     elif frequency_analyzer:
         cipher_text = analyze(cipher_text)
         return cipher_text
+
+
+def brute_force(cipher_text: str, letter_sequence: str, seed: int, dictionary_path: str, no_shuffle: bool,
+                verbose: bool = False) -> str:
+    """ Function to bruteforce shift cipher"""
+    # loads dictionary into true text detector module
+    words = TrueTextDetector.load_dictionary(dictionary_path)
+
+    # trying every possible key in key space [key space = length letter sequence]
+    for i in range(len(letter_sequence)):
+        probable_plain_text = ShiftCipher.shift(cipher_text, i, letter_sequence, seed, no_shuffle, True)
+        # show output
+        if verbose:
+            print("key #{}:\n{}\n\n".format(i, probable_plain_text))
+        # check if it's correct
+        if TrueTextDetector.is_true_text(probable_plain_text, words):
+            return probable_plain_text
+
+    return failed
 
 
 def analyze(cipher_text):
@@ -100,17 +137,6 @@ def swap(target, first: int, second: int, string: bool = True):
         return ''.join(target)
     else:
         return action()
-
-
-def brute_force(cipher_text: str, letter_sequence: str, seed: int, no_shuffle: bool, verbose: bool = False) -> str:
-    words = TrueTextDetector.load_dictionary(r'lib/dictionary_en.txt')
-    for i in range(len(letter_sequence)):
-        probable_plain_text = ShiftCipher.shift(cipher_text, i, letter_sequence, seed, no_shuffle, True)
-        if verbose:
-            print("key #{}:\n{}\n\n".format(i, probable_plain_text))
-        if TrueTextDetector.is_true_text(probable_plain_text, words):
-            return probable_plain_text
-    return failed
 
 
 if __name__ == '__main__':
