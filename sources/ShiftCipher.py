@@ -1,5 +1,6 @@
 import argparse
 import random
+
 from lib import io_library
 from lib.Characters import LETTERS
 
@@ -14,17 +15,16 @@ def main():
     parser.add_argument('-k', '--key', type=int, help='Key for encryption', required=True)
     parser.add_argument('-l', '--letters', type=str, help='letters sequence', default=LETTERS)
     parser.add_argument('-d', '--decrypt', action='store_true', default=False, help='Decryption switch')
-    group = parser.add_mutually_exclusive_group()
-    group.add_argument('-s', '--seed', type=int, help='Specify random seed for shuffling letter sequence', default=0)
-    group.add_argument('-ns', '--noShuffle', help='Don\'t shuffle letter sequence', action='store_false', default=True)
+    parser.add_argument('-s', '--seed', type=int, help='Specify random seed for shuffling letter sequence', default=0)
+    parser.add_argument('-sh', '--shuffle', help='Shuffle letter sequence', action='store_true', default=False)
     args = parser.parse_args()
 
     if args.input and args.output:
         x = io_library.reader(args.input, 't')
-        y = shift(x, args.key, args.letters, args.seed, args.noShuffle, args.decrypt)
+        y = shift(x, args.key, args.letters, args.seed, args.shuffle, args.decrypt)
         io_library.writer(args.output, y, 't')
     elif args.text:
-        print(shift(args.text, args.key, args.letters, args.seed, args.noShuffle, args.decrypt))
+        print(shift(args.text, args.key, args.letters, args.seed, args.shuffle, args.decrypt))
     else:
         raise ValueError("You have to define arguments [-i -o] or -t\n")
 
@@ -67,14 +67,18 @@ def shift(text: str, key: int, letter_sequence: str, seed: int, shuffle: bool, d
         :return shifted text
     """
 
-    key_size = len(letter_sequence)  # this is our key space
+    # this is our key space
+    key_size = len(letter_sequence)
 
-    if shuffle:  # self explaining
+    # self explaining
+    if shuffle or seed:
         letter_sequence = letter_shuffle(letter_sequence, seed)
 
-    translated = ''  # new string variable to hold translated text
+    # new string variable to hold translated text
+    translated = ''
 
-    if decrypt:  # reverse key for decryption
+    # reverse key for decryption
+    if decrypt:
         key *= -1
 
     for char in text:
@@ -82,8 +86,8 @@ def shift(text: str, key: int, letter_sequence: str, seed: int, shuffle: bool, d
             # in this section we add the key to char's index number and then calculate it's modulo with respect to
             # our key space, the result number will be the index of new mapped char to our original char
             char = letter_sequence[(letter_sequence.index(char) + key) % key_size]
-
-        translated += char  # add mapped char to string variable
+        # add mapped char to string variable
+        translated += char
 
     return translated
 
