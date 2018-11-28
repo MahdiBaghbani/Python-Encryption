@@ -1,6 +1,6 @@
 import os
 
-from lib.MakeWordPattern import make_word_pattern
+from lib.WordPatternMaker import make_word_pattern
 
 base = os.path.abspath(__file__)
 
