@@ -1,5 +1,6 @@
-import os.path as opath
+import json
 import pickle
+import os.path as opath
 from itertools import islice
 
 
@@ -20,24 +21,31 @@ def reader(path: str, mode: str, max_lines: int = 0, encoding: str = 'utf-8'):
 
     def text_reader(p: str, l: int, e: str) -> str:
         """ Reads in all of a textual file """
-        with open(p, 'r', encoding=e) as read:
+        with open(p, 'r', encoding=e) as file:
             if l:
-                data = list(islice(read, l))
+                data = list(islice(file, l))
                 data = ''.join(data)
             else:
-                data = read.read()
+                data = file.read()
         return data
 
     def binary_reader(p: str):
         """ Reads in all of a file in binaries """
 
-        with open(p, 'rb') as read:
-            data = read.read()
+        with open(p, 'rb') as file:
+            data = file.read()
         return data
 
     def pickle_reader(p: str):
-        with open(p, 'rb') as read:
-            data = pickle.loads(read.read())
+        """ Reads in a pickled file"""
+        with open(p, 'rb') as file:
+            data = pickle.loads(file.read())
+        return data
+
+    def json_reader(p: str):
+        """ Reads in a json file"""
+        with open(p, 'r') as file:
+            data = json.load(file)
         return data
 
     check_path(path)
@@ -48,6 +56,8 @@ def reader(path: str, mode: str, max_lines: int = 0, encoding: str = 'utf-8'):
         return binary_reader(path)
     elif mode is 'p':
         return pickle_reader(path)
+    elif mode is 'j':
+        return json_reader(path)
 
 
 def writer(path: str, data, mode: str, encoding: str = 'utf-8'):
@@ -61,20 +71,26 @@ def writer(path: str, data, mode: str, encoding: str = 'utf-8'):
     def text_writer(p: str, d, e: str):
         """ Writes out text to a file """
 
-        with open(p, 'w+', encoding=e) as write:
-            write.write(d)
+        with open(p, 'w+', encoding=e) as file:
+            file.write(d)
 
     def binary_writer(p, d):
         """ Writes out binaries to a file """
 
-        with open(p, 'wb') as write:
-            write.write(d)
+        with open(p, 'wb') as file:
+            file.write(d)
 
     def pickle_writer(p, d):
-        """ Writes out a data serialized content in a file """
+        """ Writes out a pickled data serialized content in a file """
 
-        with open(p, 'wb+') as write:
-            pickle.dump(d, write, pickle.HIGHEST_PROTOCOL)
+        with open(p, 'wb+') as file:
+            pickle.dump(d, file, pickle.HIGHEST_PROTOCOL)
+
+    def json_writer(p, d):
+        """ Writes out a json data serialized content in a file """
+
+        with open(p, 'w+') as file:
+            json.dump(d, file)
 
     if mode is 't':
         text_writer(path, data, encoding)
@@ -82,3 +98,5 @@ def writer(path: str, data, mode: str, encoding: str = 'utf-8'):
         binary_writer(path, data)
     elif mode is 'p':
         pickle_writer(path, data)
+    elif mode is 'j':
+        json_writer(path, data)
