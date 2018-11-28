@@ -8,9 +8,8 @@ def make_word_pattern(dictionary_path: str, output_path: str):
     word_list = io_library.reader(dictionary_path, 't').split('\n')
     make_pattern_dictionary(word_list, all_patterns)
 
-    with open(output_path, 'w+') as write:
-        write.write('allPatterns = ')
-        write.write(pprint.pformat(all_patterns))
+    # dump pattern dictionary into a json file
+    io_library.writer(output_path, all_patterns, 'j')
 
 
 def make_pattern_dictionary(word_list: list, pattern_dict: dict):
