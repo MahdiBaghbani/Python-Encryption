@@ -40,7 +40,7 @@ def load_dictionary(file: str) -> set:
     :rtype: set
     """
     dictionary = io_library.reader(file, 't').split('\n')
-    words = {word for word in dictionary}
+    words = {word.upper() for word in dictionary}
 
     return words
 
