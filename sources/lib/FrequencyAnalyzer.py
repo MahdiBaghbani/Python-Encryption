@@ -10,29 +10,39 @@ def main():
 
     parser = argparse.ArgumentParser(description='This is Frequency Analyzer program')
     parser.add_argument('-i', '--input', help='Input file path')
+    parser.add_argument('-t', '--text', help='Text to be analyzed')
     parser.add_argument('-o', '--output', help='Output file path')
-    parser.add_argument('-t', '--text', help='Text to be encrypted')
+    parser.add_argument('-s', '--show', help='Show frequency order')
     args = parser.parse_args()
 
-    if args.input and args.output:
+    if args.input:
         text = io_library.reader(args.input, 't')
-        print("Calculated score for the input is: {}/14".format(english_freq_match_score(text)))
+        score, freq = english_freq_match_score(text)
+        print("Calculated score for the input is: {}/7".format(score))
     elif args.text:
-        print("Calculated score for the input is: {}/14".format(english_freq_match_score(args.text)))
+        score, freq = english_freq_match_score(args.text)
+        print("Calculated score for the input is: {}/7".format(score))
+
+    if args.output:
+        io_library.writer(args.output, freq, 't')
+    if args.show:
+        print("frequency order: {}".format(freq))
 
 
-def get_letter_count(string: str) -> dict:
-    """ Function that counts every symbol in a string """
-    # a dictionary to save symbol count
-    letter_count = defaultdict(int)
+def english_freq_match_score(string: str) -> tuple:
+    """
+    Function to calculate frequency score of
+    a given string according to English frequency
+    """
 
-    for letter in string:
-        if letter in LETTERS:
-            letter_count[letter] += 1
+    freq_order = get_frequency_order(string)
+    freq_order = freq_order.upper()
+    match_score = 0
+    for commonLetter in ETAOIN[:7]:
+        if commonLetter in freq_order[: 7]:
+            match_score += 1
 
-    letter_count.default_factory = None
-
-    return letter_count
+    return match_score, freq_order
 
 
 def get_frequency_order(string: str) -> str:
@@ -66,24 +76,19 @@ def get_frequency_order(string: str) -> str:
     return ''.join(freq_order)
 
 
+def get_letter_count(string: str) -> dict:
+    """ Function that counts every symbol in a string """
+    # a dictionary to save symbol count
+    letter_count = defaultdict(int)
+
+    for letter in string:
+        if letter in LETTERS:
+            letter_count[letter] += 1
+
+    letter_count.default_factory = None
+
+    return letter_count
+
+
 def get_item_at_index_zero(x):
     return x[0]
-
-
-def english_freq_match_score(string: str) -> int:
-    """
-    Function to calculate frequency score of
-    a given string according to English frequency
-    """
-
-    freq_order = get_frequency_order(string)
-    freq_order = freq_order.upper()
-    match_score = 0
-    for commonLetter in ETAOIN[:7]:
-        if commonLetter in freq_order[: 7]:
-            match_score += 1
-    for uncommonLetter in ETAOIN[-7:]:
-        if uncommonLetter in freq_order[-7:]:
-            match_score += 1
-
-    return match_score
