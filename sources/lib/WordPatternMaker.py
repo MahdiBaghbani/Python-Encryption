@@ -5,7 +5,7 @@ from lib import io_library
 
 def make_word_pattern(dictionary_path: str, output_path: str):
     all_patterns = dict()
-    word_list = io_library.reader(dictionary_path, 't').split('\n')
+    word_list = io_library.reader(dictionary_path, 'j')
     make_pattern_dictionary(word_list, all_patterns)
 
     # dump pattern dictionary into a json file
@@ -19,7 +19,8 @@ def make_pattern_dictionary(word_list: list, pattern_dict: dict):
 
     for word in word_list:
         complete_list.append(word.title())
-        complete_list.append(word.upper())
+        if len(word) != 1:
+            complete_list.append(word.upper())
 
     for word in complete_list:
         pattern = get_word_pattern(word)

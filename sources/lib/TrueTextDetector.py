@@ -35,11 +35,11 @@ def load_dictionary(file: str) -> set:
     """
     Function to load dictionary file's words into a set
 
-    :param file: path to dictionary file
+    :param file: path to dictionary file, must be json
     :return: set of dictionary words
     :rtype: set
     """
-    dictionary = io_library.reader(file, 't').split('\n')
+    dictionary = io_library.reader(file, 'j')
     words = {word.upper() for word in dictionary}
 
     return words
