@@ -1,32 +1,56 @@
-import argparse
-from collections import defaultdict
+import operator
+from collections import defaultdict, namedtuple
 
 from lib.Characters import LETTERS, ETAOIN, ETAOIN_ALL
-from lib import io_library
 
 
-def main():
-    """ Wrapper for executing program in terminal """
+def get_word_frequency_order(string: str, length: str) -> tuple:
+    word_list = string.split()
 
-    parser = argparse.ArgumentParser(description='This is Frequency Analyzer program')
-    parser.add_argument('-i', '--input', help='Input file path')
-    parser.add_argument('-t', '--text', help='Text to be analyzed')
-    parser.add_argument('-o', '--output', help='Output file path')
-    parser.add_argument('-s', '--show', help='Show frequency order')
-    args = parser.parse_args()
+    if length == '1' or 'all':
+        one = get_word_order(word_list, 1)
+    if length == '2' or 'all':
+        two = get_word_order(word_list, 2)
+    if length == '3' or 'all':
+        three = get_word_order(word_list, 3)
+    if length == '4' or 'all':
+        four = get_word_order(word_list, 4)
 
-    if args.input:
-        text = io_library.reader(args.input, 't')
-        score, freq = english_freq_match_score(text)
-        print("Calculated score for the input is: {}/7".format(score))
-    elif args.text:
-        score, freq = english_freq_match_score(args.text)
-        print("Calculated score for the input is: {}/7".format(score))
+    if length == 'all':
+        frequency_order = namedtuple('frequency_order', 'one two three four')
+        return frequency_order(one, two, three, four)
 
-    if args.output:
-        io_library.writer(args.output, freq, 't')
-    if args.show:
-        print("frequency order: {}".format(freq))
+    elif length == '1':
+        return one
+    elif length == '2':
+        return two
+    elif length == '3':
+        return three
+    elif length == '4':
+        return four
+    else:
+        raise ValueError("length argument is not valid!\n")
+
+
+def get_word_order(word_list: list, length) -> tuple:
+    dictionary = defaultdict(int)
+    for i in word_list:
+        if len(i) == length:
+            dictionary[i] += 1
+    dictionary.default_factory = None
+    dictionary = sorted(dictionary.items(), key=operator.itemgetter(1), reverse=True)
+    return tuple([i[0] for i in dictionary])
+
+
+def alphabetical_sort(dataset: list, reverse=False, dictionary=None):
+    if not dictionary:
+        dictionary = defaultdict(list)
+    for item in dataset:
+        if reverse:
+            dictionary[item[-1]].append(item)
+        else:
+            dictionary[item[0]].append(item)
+    return dictionary
 
 
 def english_freq_match_score(string: str) -> tuple:
@@ -35,7 +59,7 @@ def english_freq_match_score(string: str) -> tuple:
     a given string according to English frequency
     """
 
-    freq_order = get_frequency_order(string)
+    freq_order = get_letter_frequency_order(string)
     freq_order = freq_order.upper()
     match_score = 0
     for commonLetter in ETAOIN[:7]:
@@ -45,7 +69,7 @@ def english_freq_match_score(string: str) -> tuple:
     return match_score, freq_order
 
 
-def get_frequency_order(string: str) -> str:
+def get_letter_frequency_order(string: str) -> str:
     """ Function to create frequency order of a given string """
     # count every symbol in string
     letter_count = get_letter_count(string)

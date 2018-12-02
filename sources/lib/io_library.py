@@ -9,21 +9,22 @@ def check_path(path: str):
         raise FileNotFoundError
 
 
-def reader(path: str, mode: str, max_lines: int = 0, encoding: str = 'utf-8'):
+def reader(path: str, fmt: str, max_lines: int = 0, encoding: str = 'utf-8'):
     """ Wrapper for various methods to read data from a file
 
     :param path: path to the file
-    :param mode: 't' for text file, 'b' for binary and 'p' for pickle
+    :param fmt: 't' for text file, 'b' for binary,
+                   'p' for pickle, 'j' for json
     :param max_lines: max lines to be read from a file
     :param encoding: text encodings for decode
     :return: read content
     """
 
-    def text_reader(p: str, l: int, e: str) -> str:
+    def text_reader(p: str, mxl: int, e: str) -> str:
         """ Reads in all of a textual file """
         with open(p, 'r', encoding=e) as file:
-            if l:
-                data = list(islice(file, l))
+            if mxl:
+                data = list(islice(file, mxl))
                 data = ''.join(data)
             else:
                 data = file.read()
@@ -50,21 +51,24 @@ def reader(path: str, mode: str, max_lines: int = 0, encoding: str = 'utf-8'):
 
     check_path(path)
 
-    if mode is 't':
+    if fmt is 't':
         return text_reader(path, max_lines, encoding)
-    elif mode is 'b':
+    elif fmt is 'b':
         return binary_reader(path)
-    elif mode is 'p':
+    elif fmt is 'p':
         return pickle_reader(path)
-    elif mode is 'j':
+    elif fmt is 'j':
         return json_reader(path)
+    else:
+        raise ValueError("Format is not valid!\n")
 
 
-def writer(path: str, data, mode: str, encoding: str = 'utf-8'):
+def writer(path: str, data, fmt: str, encoding: str = 'utf-8'):
     """ Wrapper for various methods to write data to a file
     :param path: path to the file
     :param data: data to be writen in file
-    :param mode: 't' for text file, 'b' for binary and 'p' for pickle
+    :param fmt: 't' for text file, 'b' for binary,
+                'p' for pickle, 'j' for json
     :param encoding: text encodings for decode
     """
 
@@ -92,11 +96,13 @@ def writer(path: str, data, mode: str, encoding: str = 'utf-8'):
         with open(p, 'w+') as file:
             json.dump(d, file)
 
-    if mode is 't':
+    if fmt is 't':
         text_writer(path, data, encoding)
-    elif mode is 'b':
+    elif fmt is 'b':
         binary_writer(path, data)
-    elif mode is 'p':
+    elif fmt is 'p':
         pickle_writer(path, data)
-    elif mode is 'j':
+    elif fmt is 'j':
         json_writer(path, data)
+    else:
+        raise ValueError("Format is not valid!\n")
