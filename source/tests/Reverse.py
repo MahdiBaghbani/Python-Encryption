@@ -1,5 +1,5 @@
 import unittest
-from sources.Reverse import reverse
+from source.Reverse import reverse
 
 
 class ReverseModule(unittest.TestCase):

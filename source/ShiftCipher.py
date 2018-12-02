@@ -12,11 +12,11 @@ def main():
     parser.add_argument('-i', '--input', help='Input file path')
     parser.add_argument('-o', '--output', help='Output file path')
     parser.add_argument('-t', '--text', help='Text to be encrypted')
-    parser.add_argument('-k', '--key', type=int, help='Key for encryption', required=True)
-    parser.add_argument('-l', '--letters', type=str, help='letters sequence', default=LETTERS)
+    parser.add_argument('-k', '--key', type=int, required=True, help='Key for encryption')
+    parser.add_argument('-l', '--letters', type=str, default=LETTERS, help='letter sequence')
     parser.add_argument('-d', '--decrypt', action='store_true', default=False, help='Decryption switch')
-    parser.add_argument('-s', '--seed', type=int, help='Specify random seed for shuffling letter sequence', default=0)
-    parser.add_argument('-sh', '--shuffle', help='Shuffle letter sequence', action='store_true', default=False)
+    parser.add_argument('-s', '--seed', type=int, default=0, help='Specify random seed for shuffling letter sequence')
+    parser.add_argument('-sh', '--shuffle', action='store_true', default=False, help='Shuffle letter sequence')
     args = parser.parse_args()
 
     if args.input and args.output:

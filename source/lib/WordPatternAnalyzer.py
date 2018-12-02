@@ -2,6 +2,7 @@ import copy
 from collections import defaultdict
 
 from lib import WordPatternMaker
+# TODO replace this with /patterns/english.json
 from lib import wordPatterns
 from lib.Characters import LETTERS
 
@@ -13,14 +14,14 @@ def frequency_aided_mapper(pattern: dict, word_frequency: str, complex_frequency
 def pattern_mapper(string: str) -> dict:
     """ Function to produce letter mapping for an string"""
     intersected_map = blank_mapper_dict()
-    cipher_word_list = string.split()
-    for cipher_word in cipher_word_list:
+    word_list = string.split()
+    for word in word_list:
         new_map = blank_mapper_dict()
-        word_pattern = WordPatternMaker.get_word_pattern(cipher_word)
+        word_pattern = WordPatternMaker.get_word_pattern(word)
         if word_pattern not in wordPatterns.allPatterns:
             continue
         for candidate in wordPatterns.allPatterns[word_pattern]:
-            new_map = add_letters_to_mapping(new_map, cipher_word, candidate)
+            new_map = add_letters_to_mapping(new_map, word, candidate)
 
         intersected_map = intersect_mappings(intersected_map, new_map)
 
@@ -43,7 +44,6 @@ def add_letters_to_mapping(letter_mapping: dict, string: str, candidate: list) -
     letter_mapping = copy.deepcopy(letter_mapping)
     # map
     for i in range(len(string)):
-        # TODO : candidate isn't upper()
         letter_mapping[string[i]].add(candidate[i].upper())
 
     return letter_mapping
@@ -77,7 +77,7 @@ def remove_solved_letters_from_mapping(letter_mapping: dict) -> dict:
     Letters in the mapping that map to only one letter are
     "solved" and can be removed from the other letters.
     For example, if 'A' maps to potential letters ['M', 'N'], and 'B'
-    maps to ['N'], then we know that 'B' must map to 'N', so we can
+    maps to ['N'], then we know that 'B' must map to 'N', source we can
     remove 'N' from the list of what 'A' could map to. So 'A' then maps
     to ['M']. Note that now that 'A' maps to only one letter, we can
     remove 'M' from the list of potential letters for every other
@@ -103,7 +103,7 @@ def remove_solved_letters_from_mapping(letter_mapping: dict) -> dict:
                 if len(letter_mapping[letter]) != 1 and solved in letter_mapping[letter]:
                     letter_mapping[letter].remove(solved)
 
-                    # A new letter is now solved, so loop again.
+                    # A new letter is now solved, source loop again.
                     if len(letter_mapping[letter]) == 1:
                         loop = True
 
