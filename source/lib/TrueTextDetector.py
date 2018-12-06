@@ -4,33 +4,6 @@ from lib import io_library
 from lib.Characters import LETTERS_AND_SPACE
 
 
-def main():
-    """ Wrapper for executing program in terminal """
-
-    parser = argparse.ArgumentParser(description='This is True Text Detector module')
-    source = parser.add_mutually_exclusive_group(required=True)
-    source.add_argument('-i', '--input', help='Input file path')
-    source.add_argument('-t', '--text', help='Text to be analyzed')
-    parser.add_argument('-d', '--dictionary', type=str, help='Dictionary file path ', required=True)
-    parser.add_argument('-w', '--word', type=int, default=20, help='Word percentage threshold')
-    parser.add_argument('-l', '--letter', type=int, default=85, help='Letter percentage threshold')
-    args = parser.parse_args()
-
-    word_set = load_dictionary(args.dictionary)
-
-    if args.input:
-        message = io_library.reader(args.input, 't')
-    elif args.text:
-        message = args.text
-    else:
-        raise ValueError("You have to define arguments [-i -o] or -t\n")
-
-    if is_true_text(message, word_set, args.word, args.letter):
-        print('True')
-    else:
-        print("False")
-
-
 def load_dictionary(file: str) -> set:
     """
     Function to load dictionary file's words into a set
@@ -96,7 +69,3 @@ def remove_non_letters(string: str):
     letters_only = [symbol for symbol in string if symbol in LETTERS_AND_SPACE]
 
     return ''.join(letters_only)
-
-
-if __name__ == '__main__':
-    main()
