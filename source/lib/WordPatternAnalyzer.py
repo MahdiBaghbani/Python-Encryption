@@ -1,9 +1,6 @@
-import copy
 from collections import defaultdict
 
 from lib import WordPatternMaker
-# TODO replace this with /patterns/english.json
-from lib import wordPatterns
 from lib.Characters import LETTERS
 
 
@@ -11,17 +8,18 @@ def frequency_aided_mapper(pattern: dict, word_frequency: str, complex_frequency
     pass
 
 
-def pattern_mapper(string: str) -> dict:
+def pattern_mapper(string: str, pattern_dictionary: dict) -> dict:
     """ Function to produce letter mapping for an string"""
     intersected_map = blank_mapper_dict()
     word_list = string.split()
     for word in word_list:
         new_map = blank_mapper_dict()
         word_pattern = WordPatternMaker.get_word_pattern(word)
-        if word_pattern not in wordPatterns.allPatterns:
+        if word_pattern not in pattern_dictionary:
             continue
-        for candidate in wordPatterns.allPatterns[word_pattern]:
-            new_map = add_letters_to_mapping(new_map, word, candidate)
+        for candidate in pattern_dictionary[word_pattern]:
+            # adds word mapping of each candidate word to new_map dictionary
+            add_letters_to_mapping(new_map, word, candidate)
 
         intersected_map = intersect_mappings(intersected_map, new_map)
 
@@ -39,14 +37,10 @@ def blank_mapper_dict() -> dict:
     return dictionary
 
 
-def add_letters_to_mapping(letter_mapping: dict, string: str, candidate: list) -> dict:
+def add_letters_to_mapping(letter_mapping: dict, string: str, candidate: list):  # -> dict:
     """ Function to create map between a string and its candidate"""
-    letter_mapping = copy.deepcopy(letter_mapping)
-    # map
     for i in range(len(string)):
         letter_mapping[string[i]].add(candidate[i].upper())
-
-    return letter_mapping
 
 
 def intersect_mappings(map_a: dict, map_b: dict) -> dict:
@@ -57,11 +51,11 @@ def intersect_mappings(map_a: dict, map_b: dict) -> dict:
     for letter in LETTERS:
         # if map_a[letter] is empty, copy map_b[letter] into intersected mapping
         if not map_a[letter]:
-            intersected_mapping[letter] = copy.deepcopy(map_b[letter])
+            intersected_mapping[letter] = set_copy(map_b[letter])
         # if map_b[letter] is empty, copy map_a[letter] into intersected mapping
         # if both map_a and map_b are empty then the intersected mapping will be empty
         elif not map_b[letter]:
-            intersected_mapping[letter] = copy.deepcopy(map_a[letter])
+            intersected_mapping[letter] = set_copy(map_a[letter])
         # if map_a and map_b both has values, then only copy the values that two maps
         # have in common in "both" maps into intersected mapper
         else:
@@ -83,7 +77,6 @@ def remove_solved_letters_from_mapping(letter_mapping: dict) -> dict:
     remove 'M' from the list of potential letters for every other
     key. (This is why there is a loop that keeps reducing the map.)
     """
-    letter_mapping = copy.deepcopy(letter_mapping)
     # loop
     loop = True
     while loop:
@@ -108,3 +101,8 @@ def remove_solved_letters_from_mapping(letter_mapping: dict) -> dict:
                         loop = True
 
     return letter_mapping
+
+
+def set_copy(input_list: set) -> set:
+    """ Function to deep copy a set object """
+    return {i for i in input_list}
