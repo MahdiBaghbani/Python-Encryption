@@ -2,10 +2,10 @@ import argparse
 from collections import defaultdict
 
 import ShiftCipher
-from lib import io_library
 from lib import FrequencyAnalyzer
 from lib import TrueTextDetector
 from lib import WordPatternAnalyzer
+from lib import io_library
 from lib.Characters import LETTERS, NEW_LINE
 from lib.FrequencyAnalyzer import ETAOIN
 
@@ -22,6 +22,8 @@ def main():
     parser.add_argument('-l', '--letters', type=str, default=LETTERS, help='letter sequence')
     parser.add_argument('-d', '--dictionary', type=str, default=r"dictionaries/english_all.json",
                         help='dictionary Path')
+    parser.add_argument('-pd', '--pattern_dictionary', type=str, default=r"patterns/english.json",
+                        help='Pattern dictionary path')
     parser.add_argument('-ml', '--max_lines', type=int, default=100, help='Maximum lines to be read')
     parser.add_argument('-v', '--verbose', action='store_true', default=False, help='Show hacking process')
     parser.add_argument('-sk', '--show_key', action='store_true', default=False,
@@ -35,22 +37,22 @@ def main():
     args = parser.parse_args()
 
     if args.input and args.output:
-        x = io_library.reader(args.input, 't', args.max_lines)
-        y = shift_hack(x, args.letters, args.seed, args.shuffle, args.dictionary, args.bruteForce,
-                       args.frequencyAnalyzer, args.verbose, args.show_key)
-        io_library.writer(args.output, y, 't')
+        inputed = io_library.reader(args.input, 't', args.max_lines)
+        outputed = shift_hack(inputed, args.letters, args.seed, args.shuffle, args.dictionary, args.pattern_dictionary,
+                              args.bruteForce, args.frequencyAnalyzer, args.verbose, args.show_key)
+        io_library.writer(args.output, outputed, 't')
 
     elif args.text:
-        print(shift_hack(args.text, args.letters, args.seed, args.shuffle, args.dictionary, args.bruteForce,
-                         args.frequencyAnalyzer, args.verbose, args.show_key))
+        print(shift_hack(args.text, args.letters, args.seed, args.shuffle, args.dictionary, args.pattern_dictionary,
+                         args.bruteForce, args.frequencyAnalyzer, args.verbose, args.show_key))
 
     else:
         raise ValueError("You have to define arguments [-i -o] or -t\n")
 
 
 def shift_hack(cipher_text: str, letter_sequence: str, seed: int, shuffle: bool, dictionary_path: str,
-               bruteforce: bool = True, frequency_analyzer: bool = False, verbose: bool = False,
-               show_key: bool = False) -> str:
+               pattern_dictionary_path: str, bruteforce: bool = True, frequency_analyzer: bool = False,
+               verbose: bool = False, show_key: bool = False) -> str:
     """ Function to handle hack procedure"""
 
     if bruteforce:
@@ -72,7 +74,7 @@ def shift_hack(cipher_text: str, letter_sequence: str, seed: int, shuffle: bool,
             return brute_force(cipher_text, letter_sequence, seed, dictionary_path, shuffle, verbose, show_key)
 
     elif frequency_analyzer:
-        analyze(cipher_text)
+        analyze(cipher_text, dictionary_path, pattern_dictionary_path)
         # return cipher_text
 
 
@@ -98,15 +100,16 @@ def brute_force(cipher_text: str, letter_sequence: str, seed: int, dictionary_pa
     return failed
 
 
-def analyze(cipher_text: str):
-    # words = TrueTextDetector.load_dictionary(r'lib/dictionary_en.txt')
+def analyze(cipher_text: str, dictionary_path: str, pattern_dictionary_path: str):
+    # words = TrueTextDetector.load_dictionary(dictionary_path)
     # get frequency order of cipher_text
     frequency = FrequencyAnalyzer.get_letter_frequency_order(cipher_text)
     # replace the most frequent with ' ' [space], because in 99% of cases
     # the most frequent character in a cipher_text in ' '
     cipher_text = cipher_text.replace(frequency[0], ETAOIN[0])
     # gets potential cipher to letter mapping
-    pattern = WordPatternAnalyzer.pattern_mapper(cipher_text)
+    pattern_dictionary = io_library.reader(pattern_dictionary_path, 'j')
+    pattern = WordPatternAnalyzer.pattern_mapper(cipher_text, pattern_dictionary)
     print(pattern)
 
     """comb = frequency[1:7]
@@ -119,7 +122,7 @@ def analyze(cipher_text: str):
         if TrueTextDetector.is_true_text(temp, words, 2, 2):
             plain += temp + '\n\n\n\n\n'"""
 
-    #return str(WordPatternAnalyzer.hack_simple_sub(cipher_text))
+    # return str(WordPatternAnalyzer.hack_simple_sub(cipher_text))
 
 
 def index_mapper(string: str):
@@ -183,4 +186,5 @@ def swap(target, first: int, second: int, string: bool = True):
 # if __name__ == '__main__':
 #     main()
 
-shift_hack(io_library.reader('cipher/1.txt', 't'), LETTERS, 0, True, 'dictionaries/english_all.json', False, True)
+shift_hack(io_library.reader('1.txt', 't'), LETTERS, 0, True, 'dictionaries/english_all.json', 'patterns/english.json',
+           False, True)
