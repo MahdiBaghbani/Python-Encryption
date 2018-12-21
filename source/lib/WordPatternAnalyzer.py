@@ -103,6 +103,6 @@ def remove_solved_letters_from_mapping(letter_mapping: dict) -> dict:
     return letter_mapping
 
 
-def set_copy(input_list: set) -> set:
+def set_copy(input_set: set) -> set:
     """ Function to deep copy a set object """
-    return {i for i in input_list}
+    return {i for i in input_set}
