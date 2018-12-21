@@ -1,35 +1,22 @@
 import operator
-from collections import defaultdict, namedtuple
+from collections import defaultdict
 
 from lib.Characters import LETTERS, ETAOIN, ETAOIN_ALL
 
 
-def get_word_frequency_order(string: str, length: str) -> tuple:
+def get_word_frequency_order(string: str, length: str) -> list:
     word_list = string.split()
-
+    frequency_order = [[], [], [], []]
     if length == '1' or 'all':
-        one = get_word_order(word_list, 1)
+        frequency_order[0] = get_word_order(word_list, 1)
     if length == '2' or 'all':
-        two = get_word_order(word_list, 2)
+        frequency_order[1] = get_word_order(word_list, 2)
     if length == '3' or 'all':
-        three = get_word_order(word_list, 3)
+        frequency_order[2] = get_word_order(word_list, 3)
     if length == '4' or 'all':
-        four = get_word_order(word_list, 4)
+        frequency_order[3] = get_word_order(word_list, 4)
 
-    if length == 'all':
-        frequency_order = namedtuple('frequency_order', 'one two three four')
-        return frequency_order(one, two, three, four)
-
-    elif length == '1':
-        return one
-    elif length == '2':
-        return two
-    elif length == '3':
-        return three
-    elif length == '4':
-        return four
-    else:
-        raise ValueError("length argument is not valid!\n")
+    return frequency_order
 
 
 def get_word_order(word_list: list, length) -> tuple:
@@ -42,14 +29,21 @@ def get_word_order(word_list: list, length) -> tuple:
     return tuple([i[0] for i in dictionary])
 
 
-def alphabetical_sort(dataset: list, reverse=False, dictionary=None):
+def alphabetical_sort(dataset: list, dictionary: bool = None, reverse: bool = False, both: bool = False):
+
     if not dictionary:
-        dictionary = defaultdict(list)
+        dictionary = defaultdict(set)
+
     for item in dataset:
-        if reverse:
-            dictionary[item[-1]].append(item)
+        if both:
+            dictionary[item[-1]].add(item)
+            dictionary[item[0]].add(item)
         else:
-            dictionary[item[0]].append(item)
+            if reverse:
+                dictionary[item[-1]].add(item)
+            else:
+                dictionary[item[0]].add(item)
+
     return dictionary
 
 
@@ -58,10 +52,14 @@ def english_freq_match_score(string: str) -> tuple:
     Function to calculate frequency score of
     a given string according to English frequency
     """
-
+    # get the frequency order of a given string
     freq_order = get_letter_frequency_order(string)
+    # uppercase all letters
     freq_order = freq_order.upper()
+    # start score from 0
     match_score = 0
+    # for common letters in first 6 letters of the string frequency
+    #  and English frequency add 1 to score
     for commonLetter in ETAOIN[:7]:
         if commonLetter in freq_order[: 7]:
             match_score += 1
