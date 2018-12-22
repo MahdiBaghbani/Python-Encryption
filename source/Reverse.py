@@ -33,7 +33,7 @@ def reverse(text: str):
     i = len(text) - 1
     while i >= 0:
         translated += text[i]
-        i = i - 1
+        i -= 1
 
     return translated
 
