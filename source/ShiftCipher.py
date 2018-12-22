@@ -42,7 +42,7 @@ class Shift:
         return shift(text, self.key, self.letter_sequence, self.seed, self.shuffle)
 
     def decrypt(self, text: str):
-        return shift(text, self.key, self.letter_sequence, self.seed, self.shuffle, True)
+        return shift(text, self.key, self.letter_sequence, self.seed, self.shuffle, decrypt=True)
 
     def config(self, key: int = None, letter_sequence: str = None, seed: int = None, shuffle: bool = None):
         if key:

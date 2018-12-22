@@ -63,7 +63,8 @@ def shift_hack(cipher_text: str, letter_sequence: str, seed: int, shuffle: bool,
                 if verbose:
                     print("Seed => {}\n".format(i))
                 # bruteforce
-                plain_text = brute_force(cipher_text, letter_sequence, i, dictionary_path, True, verbose, show_key)
+                plain_text = brute_force(cipher_text, letter_sequence, i, dictionary_path, shuffle=True,
+                                         verbose=verbose, show_key=show_key)
                 # return hacked text
                 if plain_text != failed:
                     return plain_text
@@ -86,7 +87,7 @@ def brute_force(cipher_text: str, letter_sequence: str, seed: int, dictionary_pa
     words = TrueTextDetector.load_dictionary(dictionary_path)
     # trying every possible key in key space [key space = length letter sequence]
     for i in range(len(letter_sequence)):
-        probable_plain_text = ShiftCipher.shift(cipher_text, i, letter_sequence, seed, shuffle, True)
+        probable_plain_text = ShiftCipher.shift(cipher_text, i, letter_sequence, seed, shuffle, decrypt=True)
         # show output
         if verbose:
             print("key #{}:\n{}\n\n".format(i, probable_plain_text))
