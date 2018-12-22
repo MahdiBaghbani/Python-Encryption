@@ -52,7 +52,7 @@ def main():
 
 def shift_hack(cipher_text: str, letter_sequence: str, seed: int, shuffle: bool, dictionary_path: str,
                pattern_dictionary_path: str, bruteforce: bool = True, frequency_analyzer: bool = False,
-               verbose: bool = False, show_key: bool = False) -> str:
+               verbose: bool = False, show_key: bool = False):
     """ Function to handle hack procedure"""
 
     if bruteforce:
@@ -74,7 +74,7 @@ def shift_hack(cipher_text: str, letter_sequence: str, seed: int, shuffle: bool,
             return brute_force(cipher_text, letter_sequence, seed, dictionary_path, shuffle, verbose, show_key)
 
     elif frequency_analyzer:
-        analyze(cipher_text, dictionary_path, pattern_dictionary_path)
+        return analyze(cipher_text, dictionary_path, pattern_dictionary_path)
         # return cipher_text
 
 
@@ -110,7 +110,6 @@ def analyze(cipher_text: str, dictionary_path: str, pattern_dictionary_path: str
     # gets potential cipher to letter mapping
     pattern_dictionary = io_library.reader(pattern_dictionary_path, 'j')
     pattern = WordPatternAnalyzer.pattern_mapper(cipher_text, pattern_dictionary)
-    print(pattern)
 
     """comb = frequency[1:7]
     comb = combination(comb)
@@ -123,6 +122,7 @@ def analyze(cipher_text: str, dictionary_path: str, pattern_dictionary_path: str
             plain += temp + '\n\n\n\n\n'"""
 
     # return str(WordPatternAnalyzer.hack_simple_sub(cipher_text))
+    return pattern
 
 
 def index_mapper(string: str):
