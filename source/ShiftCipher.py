@@ -32,7 +32,7 @@ def main():
 class Shift:
     """ Shift cipher class """
 
-    def __init__(self, key: int, letter_sequence: str = LETTERS, seed: int = 0, shuffle: bool = True):
+    def __init__(self, key: int, letter_sequence: str = LETTERS, seed: int = 0, shuffle: bool = False):
         self.key = key
         self.seed = seed
         self.shuffle = shuffle
@@ -55,7 +55,7 @@ class Shift:
             self.letter_sequence = letter_sequence
 
 
-def shift(text: str, key: int, letter_sequence: str, seed: int, shuffle: bool, decrypt: bool = False) -> str:
+def shift(text: str, key: int, letter_sequence: str, seed: int, shuffle: bool = False, decrypt: bool = False) -> str:
     """
         Function to shift letters
         :param text : text to be shifted
@@ -92,14 +92,14 @@ def shift(text: str, key: int, letter_sequence: str, seed: int, shuffle: bool, d
     return translated
 
 
-def letter_shuffle(letter_str: str, s: int) -> str:
+def letter_shuffle(letter_str: str, seed: int) -> str:
     """
     Function to shuffle a word sequence
     :param letter_str:
-    :param s:
+    :param seed:
     :return: word sequence
     """
-    random.seed(s)
+    random.seed(seed)
     letter_list = list(letter_str)
     random.shuffle(letter_list)
     return ''.join(letter_list)

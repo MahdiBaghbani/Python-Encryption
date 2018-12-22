@@ -38,21 +38,21 @@ def main():
 
     if args.input and args.output:
         inputed = io_library.reader(args.input, 't', args.max_lines)
-        outputed = shift_hack(inputed, args.letters, args.seed, args.shuffle, args.dictionary, args.pattern_dictionary,
+        outputed = shift_hack(inputed, args.letters, args.seed, args.dictionary, args.pattern_dictionary, args.shuffle,
                               args.bruteForce, args.frequencyAnalyzer, args.verbose, args.show_key)
         io_library.writer(args.output, outputed, 't')
 
     elif args.text:
-        print(shift_hack(args.text, args.letters, args.seed, args.shuffle, args.dictionary, args.pattern_dictionary,
+        print(shift_hack(args.text, args.letters, args.seed, args.dictionary, args.pattern_dictionary, args.shuffle,
                          args.bruteForce, args.frequencyAnalyzer, args.verbose, args.show_key))
 
     else:
         raise ValueError("You have to define arguments [-i -o] or -t\n")
 
 
-def shift_hack(cipher_text: str, letter_sequence: str, seed: int, shuffle: bool, dictionary_path: str,
-               pattern_dictionary_path: str, bruteforce: bool = True, frequency_analyzer: bool = False,
-               verbose: bool = False, show_key: bool = False):
+def shift_hack(cipher_text: str, letter_sequence: str, seed: int, dictionary_path: str, pattern_dictionary_path: str,
+               shuffle: bool = False, bruteforce: bool = True, frequency_analyzer: bool = False, verbose: bool = False,
+               show_key: bool = False):
     """ Function to handle hack procedure"""
 
     if bruteforce:
@@ -111,6 +111,7 @@ def analyze(cipher_text: str, dictionary_path: str, pattern_dictionary_path: str
     # gets potential cipher to letter mapping
     pattern_dictionary = io_library.reader(pattern_dictionary_path, 'j')
     pattern = WordPatternAnalyzer.pattern_mapper(cipher_text, pattern_dictionary)
+    # print(pattern)
 
     """comb = frequency[1:7]
     comb = combination(comb)
@@ -187,5 +188,5 @@ def swap(target, first: int, second: int, string: bool = True):
 # if __name__ == '__main__':
 #     main()
 
-shift_hack(io_library.reader('1.txt', 't'), LETTERS, 0, True, 'dictionaries/english_all.json', 'patterns/english.json',
-           False, True)
+shift_hack(io_library.reader('1.txt', 't'), LETTERS, 0, 'dictionaries/english_all.json', 'patterns/english.json',
+           bruteforce=False, frequency_analyzer=True)
