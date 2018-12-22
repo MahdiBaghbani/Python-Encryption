@@ -1,5 +1,3 @@
-import argparse
-
 from lib import io_library
 from lib.Characters import LETTERS_AND_SPACE
 
