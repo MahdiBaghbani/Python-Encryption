@@ -28,7 +28,8 @@ def reverse(text: str):
     :param text: text to be reversed
     :return reversed text
     """
-    translated = ''  # new string variable to hold translated text
+    # new string variable to hold translated text
+    translated = ''
 
     i = len(text) - 1
     while i >= 0:
