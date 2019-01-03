@@ -11,9 +11,8 @@ def load_dictionary(file: str) -> set:
     :rtype: set
     """
     dictionary = io_library.reader(file, 'j')
-    words = {word.upper() for word in dictionary}
 
-    return words
+    return {word.upper() for word in dictionary}
 
 
 def is_true_text(string: str, words: set, word_percentage: int = 20, letter_percentage: int = 85) -> bool:
