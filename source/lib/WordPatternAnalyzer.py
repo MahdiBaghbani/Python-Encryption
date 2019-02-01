@@ -85,7 +85,7 @@ def remove_solved_letters_from_mapping(letter_mapping: dict) -> dict:
         # solvedLetters will be a list of letters that have one
         # and only one possible mapping in letter_mapping
         solved_letters = list()
-        # loop through letters and find solved ones
+        # loop through letters and letter_index_finder solved ones
         for letter in LETTERS:
             if len(letter_mapping[letter]) == 1:
                 # append letter to solved letters

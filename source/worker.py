@@ -1,5 +1,5 @@
 from lib.FrequencyAnalyzer import get_letter_frequency_order, get_word_frequency_order, alphabetical_sort
-from lib.io_library import reader
+from lib.io_library import reader, writer
 
 
 def fuck():
@@ -27,14 +27,3 @@ def me():
 
     return dictionary
 
-# text = reader(r'D:\Development\Encryption-Programs\Python\source\texts\alan turing.txt', 't')
-# freq = get_letter_frequency_order(text)
-# text = text.replace(freq[0], ' ')
-# word_tuple = get_word_frequency_order(text, 'all')
-#
-#
-# dictionary = dict()
-# for i in word_tuple:
-#     dictionary = alphabetical_sort(i, dictionary, both=True)
-#
-# print(dictionary)

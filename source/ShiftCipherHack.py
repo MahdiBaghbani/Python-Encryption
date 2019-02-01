@@ -20,7 +20,7 @@ def main():
     parser.add_argument('-o', '--output', help='Output file path')
     parser.add_argument('-t', '--text', help='Text to be encrypted')
     parser.add_argument('-l', '--letters', type=str, default=LETTERS, help='letter sequence')
-    parser.add_argument('-d', '--dictionary', type=str, default=r"dictionaries/english_all.json",
+    parser.add_argument('-d', '--dictionary', type=str, default=r"dictionaries/english all words.json",
                         help='dictionary Path')
     parser.add_argument('-pd', '--pattern_dictionary', type=str, default=r"patterns/english.json",
                         help='Pattern dictionary path')
@@ -138,7 +138,7 @@ def index_mapper(string: str):
     index = defaultdict(list)
     for letter in letters:
         index[letter] = find(string, letter)
-    return
+    return index
 
 
 def find(string: str, character: str) -> list:
@@ -188,5 +188,5 @@ def swap(target, first: int, second: int, string: bool = True):
 # if __name__ == '__main__':
 #     main()
 
-shift_hack(io_library.reader('1.txt', 't'), LETTERS, 0, 'dictionaries/english_all.json', 'patterns/english.json',
+shift_hack(io_library.reader('1.txt', 't'), LETTERS, 0, 'dictionaries/english all words.json', 'patterns/english.json',
            bruteforce=False, frequency_analyzer=True)
