@@ -1,20 +1,20 @@
 import json
 import pickle
-import os.path as opath
+import os.path as os_path
 from itertools import islice
 
 
 def check_path(path: str):
-    if not opath.isfile(path):
-        raise FileNotFoundError
+    if not os_path.isfile(path):
+        raise FileNotFoundError("Path to file is not correct!\n")
 
 
 def reader(path: str, fmt: str, max_lines: int = 0, encoding: str = 'utf-8'):
-    """ Wrapper for various methods to read data from a file
+    """
+    Wrapper for various methods to read data from a file
 
     :param path: path to the file
-    :param fmt: 't' for text file, 'b' for binary,
-                   'p' for pickle, 'j' for json
+    :param fmt: 't' for text file, 'b' for binary, 'p' for pickle, 'j' for json
     :param max_lines: max lines to be read from a file
     :param encoding: text encodings for decode
     :return: read content
@@ -22,6 +22,7 @@ def reader(path: str, fmt: str, max_lines: int = 0, encoding: str = 'utf-8'):
 
     def text_reader(p: str, mxl: int, e: str) -> str:
         """ Reads in all of a textual file """
+
         with open(p, 'r', encoding=e) as file:
             if mxl:
                 data = list(islice(file, mxl))
@@ -39,12 +40,14 @@ def reader(path: str, fmt: str, max_lines: int = 0, encoding: str = 'utf-8'):
 
     def pickle_reader(p: str):
         """ Reads in a pickled file"""
+
         with open(p, 'rb') as file:
             data = pickle.loads(file.read())
         return data
 
     def json_reader(p: str):
         """ Reads in a json file"""
+
         with open(p, 'r') as file:
             data = json.load(file)
         return data
@@ -64,11 +67,11 @@ def reader(path: str, fmt: str, max_lines: int = 0, encoding: str = 'utf-8'):
 
 
 def writer(path: str, data, fmt: str, encoding: str = 'utf-8'):
-    """ Wrapper for various methods to write data to a file
+    """
+    Wrapper for various methods to write data to a file
     :param path: path to the file
     :param data: data to be writen in file
-    :param fmt: 't' for text file, 'b' for binary,
-                'p' for pickle, 'j' for json
+    :param fmt: 't' for text file, 'b' for binary, 'p' for pickle, 'j' for json
     :param encoding: text encodings for decode
     """
 

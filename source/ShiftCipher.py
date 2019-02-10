@@ -58,6 +58,7 @@ class Shift:
 def shift(text: str, key: int, letter_sequence: str, seed: int, shuffle: bool = False, decrypt: bool = False) -> str:
     """
         Function to shift letters
+
         :param text : text to be shifted
         :param key: key for shifting
         :param letter_sequence: the letter sequence the will be shifted with respect of the key
@@ -95,6 +96,7 @@ def shift(text: str, key: int, letter_sequence: str, seed: int, shuffle: bool = 
 def letter_shuffle(letter_str: str, seed: int) -> str:
     """
     Function to shuffle a word sequence
+
     :param letter_str:
     :param seed:
     :return: word sequence

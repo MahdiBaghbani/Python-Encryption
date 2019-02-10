@@ -25,6 +25,7 @@ def main():
 def reverse(text: str):
     """
     Function to reverse a text
+
     :param text: text to be reversed
     :return reversed text
     """

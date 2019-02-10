@@ -4,33 +4,32 @@ from collections import defaultdict
 from lib.Characters import LETTERS, ETAOIN, ETAOIN_ALL
 
 
-def get_word_frequency_order(string: str, length: str) -> list:
+def get_word_frequency_order(string: str, length: str) -> dict:
     word_list = string.split()
-    frequency_order = [[], [], [], []]
+    frequency_order = {"1": [], "2": [], "3": [], "4": []}
     if length == '1' or 'all':
-        frequency_order[0] = get_word_order(word_list, 1)
+        frequency_order["1"] = get_word_order(word_list, 1)
     if length == '2' or 'all':
-        frequency_order[1] = get_word_order(word_list, 2)
+        frequency_order["2"] = get_word_order(word_list, 2)
     if length == '3' or 'all':
-        frequency_order[2] = get_word_order(word_list, 3)
+        frequency_order["3"] = get_word_order(word_list, 3)
     if length == '4' or 'all':
-        frequency_order[3] = get_word_order(word_list, 4)
+        frequency_order["4"] = get_word_order(word_list, 4)
 
     return frequency_order
 
 
-def get_word_order(word_list: list, length) -> tuple:
+def get_word_order(word_list: list, length) -> list:
     dictionary = defaultdict(int)
     for i in word_list:
         if len(i) == length:
             dictionary[i] += 1
     dictionary.default_factory = None
     dictionary = sorted(dictionary.items(), key=operator.itemgetter(1), reverse=True)
-    return tuple([i[0] for i in dictionary])
+    return [i[0] for i in dictionary]
 
 
 def alphabetical_sort(dataset: list, dictionary: bool = None, reverse: bool = False, both: bool = False):
-
     if not dictionary:
         dictionary = defaultdict(set)
 
