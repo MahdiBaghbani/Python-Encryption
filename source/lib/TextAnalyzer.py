@@ -1,7 +1,7 @@
 from collections import defaultdict
 
-from lib import WordPatternMaker
 from lib import TrueTextDetector
+from lib import WordPatternMaker
 from lib.Characters import LETTERS, NEW_LINE, ETAOIN
 
 
@@ -15,7 +15,7 @@ def pattern_mapper(string: str, pattern_dictionary: dict) -> dict:
     """
 
     # check inputs
-    if not type(string) == string:
+    if not type(string) == str:
         raise TypeError("Argument 'string' of this function must be of type string.\n")
     if not type(pattern_dictionary) == dict:
         raise TypeError("Argument 'pattern_dictionary' of this function must be of type dictionary.\n")
