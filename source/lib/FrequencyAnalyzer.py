@@ -1,7 +1,7 @@
 import operator
 from collections import defaultdict
 
-from lib.Characters import LETTERS, ETAOIN, ETAOIN_ALL
+from lib.Characters import ETAOIN, ETAOIN_ALL
 
 
 def get_word_frequency_order(string: str, length: str) -> dict:
@@ -183,8 +183,7 @@ def get_letter_count(string: str) -> dict:
     letter_count = defaultdict(int)
 
     for letter in string:
-        if letter in LETTERS:
-            letter_count[letter] += 1
+        letter_count[letter] += 1
 
     return dict(letter_count)
 

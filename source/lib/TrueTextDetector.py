@@ -20,7 +20,7 @@ def load_dictionary(dictionary_file_path: str) -> set:
     return {word.upper() for word in dictionary}
 
 
-def is_true_text(string: str, words: set, word_percentage: int = 20, letter_percentage: int = 85) -> bool:
+def is_true_text(string: str, words: set, word_percentage: int = 40, letter_percentage: int = 70) -> bool:
     """
     Function to determine if the given string is proper text or not
     you can adjust sensitivity and overwrite default threshold percentage
