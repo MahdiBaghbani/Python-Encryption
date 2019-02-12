@@ -231,7 +231,7 @@ def analyzer_process(string: str, pattern_dictionary: dict, frequent_unordered_w
     letter_map = TextAnalyzer.repair_mapping(letter_map, repaired_map_dict, cipher_letter_frequency)
 
     # refill the out_put string based on newly repaired letter_map and same letter_index_map as before
-    output_string = TextAnalyzer.string_filler(letter_map, letter_index_map, string=output_string)
+    output_string = TextAnalyzer.string_filler(letter_map, letter_index_map, string=''.join(output_string))
 
     # replace every 10th space with newline
     for i, j in enumerate(letter_index_map[space]):

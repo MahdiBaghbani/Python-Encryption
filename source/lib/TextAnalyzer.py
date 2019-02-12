@@ -303,7 +303,7 @@ def get_word_from_index(string: str, index: int) -> str:
     return string[index]
 
 
-def string_filler(letter_map: dict, letter_index_map: dict, string_length: int = None, string: str = None) -> str:
+def string_filler(letter_map: dict, letter_index_map: dict, string_length: int = None, string: str = None) -> list:
     """
     This function will create a string and fill it with letters on a letter map
     based on their indexes in the letter index map, it can also
@@ -314,7 +314,7 @@ def string_filler(letter_map: dict, letter_index_map: dict, string_length: int =
     :param letter_index_map: indexes of each letter in letter map
     :param string_length: length of output string
     :param string: existing string to be refilled
-    :return:
+    :return: a list containing filled letters
     """
 
     # check inputs
@@ -327,7 +327,8 @@ def string_filler(letter_map: dict, letter_index_map: dict, string_length: int =
 
     # determine to use an existing string or create new string
     if string:
-        output_string = string
+        # convert string into list of letters
+        output_string = list(string)
     else:
         # create a blank text with length equal to cipher-text
         output_string = ['_'] * string_length
