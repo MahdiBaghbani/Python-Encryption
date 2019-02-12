@@ -38,6 +38,9 @@ def pattern_mapper(string: str, pattern_dictionary: dict, space_letter: str, let
             add_letters_to_mapping(new_map, word, candidate)
         # intersect new map with previous intersected map
         intersected_map = intersect_mappings(intersected_map, new_map, letter_sequence)
+    # add space letter to the pattern map
+    intersected_map[space_letter].add(' ')
+
     # return solved mapping dictionary
     return dict(remove_solved_letters_from_mapping(intersected_map, letter_sequence))
 
@@ -50,10 +53,10 @@ def blank_mapper_dict() -> defaultdict:
     return defaultdict(set)
 
 
-def add_letters_to_mapping(letter_mapping: defaultdict, string: str, candidate: str):
+def add_letters_to_mapping(letter_map: defaultdict, string: str, candidate: str):
     """
     Function to create map between a string and its candidate
-    :param letter_mapping: mapping to be completed
+    :param letter_map: mapping to be completed
     :param string: word
     :param candidate: candidate word for the word
     """
@@ -61,51 +64,51 @@ def add_letters_to_mapping(letter_mapping: defaultdict, string: str, candidate: 
     # check inputs
     if not (type(string) == str and type(candidate) == str):
         raise TypeError("Arguments 'string' and 'candidate' of this function must be of type string.\n")
-    if not type(letter_mapping) == defaultdict:
-        raise TypeError("Argument 'letter_mapping' of this function must be of type default dictionary.\n")
+    if not type(letter_map) == defaultdict:
+        raise TypeError("Argument 'letter_map' of this function must be of type default dictionary.\n")
 
     # add each letter of candidate to corresponding word letter map
     for i in range(len(string)):
-        letter_mapping[string[i]].add(candidate[i].upper())
+        letter_map[string[i]].add(candidate[i].upper())
 
 
-def intersect_mappings(map_a: defaultdict, map_b: defaultdict, letter_sequence: str) -> defaultdict:
+def intersect_mappings(letter_map_a: defaultdict, letter_map_b: defaultdict, letter_sequence: str) -> defaultdict:
     """
     Function to calculate intersected mappings out of 2 maps
 
-    :param map_a: first map
-    :param map_b: second map
+    :param letter_map_a: first map
+    :param letter_map_b: second map
     :param letter_sequence: a string containing all letters used in the string
     :return: intersected map from first and second map
 
     """
 
     # check inputs
-    if not (type(map_a) == defaultdict and type(map_b) == defaultdict):
+    if not (type(letter_map_a) == defaultdict and type(letter_map_b) == defaultdict):
         raise TypeError("Arguments of this function must be of type default dictionary.\n")
 
     # new mapper dictionary
     intersected_mapping = blank_mapper_dict()
 
     for letter in letter_sequence:
-        # if map_a[letter] is empty, copy map_b[letter] into intersected mapping
-        if not map_a[letter]:
-            intersected_mapping[letter] = shallow_set_copy(map_b[letter])
-        # if map_b[letter] is empty, copy map_a[letter] into intersected mapping
-        # if both map_a and map_b are empty then the intersected mapping will be empty
-        elif not map_b[letter]:
-            intersected_mapping[letter] = shallow_set_copy(map_a[letter])
-        # if map_a and map_b both has values, then only copy the values that two maps
+        # if letter_map_a[letter] is empty, copy letter_map_b[letter] into intersected mapping
+        if not letter_map_a[letter]:
+            intersected_mapping[letter] = shallow_set_copy(letter_map_b[letter])
+        # if letter_map_b[letter] is empty, copy letter_map_a[letter] into intersected mapping
+        # if both letter_map_a and letter_map_b are empty then the intersected mapping will be empty
+        elif not letter_map_b[letter]:
+            intersected_mapping[letter] = shallow_set_copy(letter_map_a[letter])
+        # if letter_map_a and letter_map_b both has values, then only copy the values that two maps
         # have in common in "both" maps into intersected mapper
         else:
-            for mapped_letter in map_a[letter]:
-                if mapped_letter in map_b[letter]:
+            for mapped_letter in letter_map_a[letter]:
+                if mapped_letter in letter_map_b[letter]:
                     intersected_mapping[letter].add(mapped_letter)
 
     return intersected_mapping
 
 
-def remove_solved_letters_from_mapping(letter_mapping: defaultdict, letter_sequence: str) -> defaultdict:
+def remove_solved_letters_from_mapping(letter_map: defaultdict, letter_sequence: str) -> defaultdict:
     """
     Letters in the mapping that map to only one letter are
     "solved" and can be removed from the other letters.
@@ -116,13 +119,13 @@ def remove_solved_letters_from_mapping(letter_mapping: defaultdict, letter_seque
     remove 'M' from the list of potential letters for every other
     key. (This is why there is a loop that keeps reducing the map.)
 
-    :param letter_mapping: the dictionary containing mapping between letters
+    :param letter_map: the dictionary containing mapping between letters
     :param letter_sequence: a string containing all letters used in the string
     :return cleared mapping
     """
 
     # check inputs
-    if not type(letter_mapping) == defaultdict:
+    if not type(letter_map) == defaultdict:
         raise TypeError("Argument of this function must be of type default dictionary.\n")
 
     # loop
@@ -131,24 +134,49 @@ def remove_solved_letters_from_mapping(letter_mapping: defaultdict, letter_seque
         # first assume that we will not loop again
         loop = False
         # solvedLetters will be a list of letters that have one
-        # and only one possible mapping in letter_mapping
+        # and only one possible mapping in letter_map
         solved_letters = list()
         # loop through letters and letter_index_finder solved ones
         for letter in letter_sequence:
-            if len(letter_mapping[letter]) == 1:
+            if len(letter_map[letter]) == 1:
                 # append letter to solved letters
-                solved_letters.append(next(iter(letter_mapping[letter])))
+                solved_letters.append(next(iter(letter_map[letter])))
         # loop through letters and remove solved ones from mapping
         for letter in letter_sequence:
             for solved in solved_letters:
-                if len(letter_mapping[letter]) != 1 and solved in letter_mapping[letter]:
-                    letter_mapping[letter].remove(solved)
+                if len(letter_map[letter]) != 1 and solved in letter_map[letter]:
+                    letter_map[letter].remove(solved)
 
                     # A new letter is now solved, source loop again.
-                    if len(letter_mapping[letter]) == 1:
+                    if len(letter_map[letter]) == 1:
                         loop = True
 
-    return letter_mapping
+    return letter_map
+
+
+def repair_mapping(letter_map: dict, aid_map: dict, letter_sequence: str) -> dict:
+    """
+    Function to repair an existing mapping with ais dictionary
+
+    :param letter_map: original mapping
+    :param aid_map: aid mapping that will be used to repair the original mapping
+    :param letter_sequence: the letters that has been used in the string which original mapping derived
+    :return: repaired apping
+    """
+
+    # create a new default dictionary
+    repaired_dict = blank_mapper_dict()
+
+    # replace values of aid map into the original dictionary
+    for key in aid_map:
+        letter_map[key] = aid_map[key]
+
+    # convert original dictionary into default dictionary
+    for key in letter_map:
+        repaired_dict[key] = letter_map[key]
+
+    # remove solved letters if possible and return a repaired dictionary
+    return dict(remove_solved_letters_from_mapping(repaired_dict, letter_sequence))
 
 
 def index_mapper(string: str, mode: str, letter_sequence: str, word=None):
@@ -171,7 +199,7 @@ def index_mapper(string: str, mode: str, letter_sequence: str, word=None):
 
     # map letters
     if mode == "letter":
-        # adding new line character '\n' to letters
+        # adding new line character '\n' to letter_sequence
         letters = letter_sequence + NEW_LINE
         # a default dictionary containing the list as key
         index = defaultdict(list)
@@ -275,6 +303,52 @@ def get_word_from_index(string: str, index: int) -> str:
     return string[index]
 
 
+def string_filler(letter_map: dict, letter_index_map: dict, string_length: int = None, string: str = None) -> str:
+    """
+    This function will create a string and fill it with letters on a letter map
+    based on their indexes in the letter index map, it can also
+    refill an existing string with same requirements, but the
+    letter index map must be compatible [do not cause IndexError in process]
+
+    :param letter_map: mapping of letters
+    :param letter_index_map: indexes of each letter in letter map
+    :param string_length: length of output string
+    :param string: existing string to be refilled
+    :return:
+    """
+
+    # check inputs
+    if not (type(letter_map) == dict and type(letter_index_map) == dict):
+        raise TypeError("Arguments 'letter_map' and 'letter_index_map' of this function must be of type dictionary.\n")
+    if string_length and not type(string_length) == int:
+        raise TypeError("Argument 'string_length' of this function must be of type integer.\n")
+    if string and not type(string) == str:
+        raise TypeError("Argument 'string' of this function must be of type string.\n")
+
+    # determine to use an existing string or create new string
+    if string:
+        output_string = string
+    else:
+        # create a blank text with length equal to cipher-text
+        output_string = ['_'] * string_length
+
+    # loop to reconstruct plain-txt from solved cipher-letters
+    for letter in letter_map:
+        # if the cipher-letter "letter" is solved, it's corresponding set must be of size 1
+        if len(letter_map[letter]) == 1:
+            # extract plain-letter from set inside dictionary
+            plain_letter = next(iter(letter_map[letter]))
+            # use indexes of cipher-letter "letter" in cipher-text to place plain-letter in correct position
+            for i in letter_index_map[letter]:
+                # it is possible to catch IndexError for un-compatible letter_index_map and string
+                try:
+                    output_string[i] = plain_letter
+                except IndexError:
+                    raise IndexError("'letter_index_map' argument isn't compatible with 'string' argument!\n")
+    # return filled string
+    return output_string
+
+
 def test_high_frequency(string: str, output_string: str, pattern: dict, letter_index_map: dict, letter_sequence: str,
                         frequent_words: dict, words: set) -> dict:
     """
@@ -303,15 +377,16 @@ def test_high_frequency(string: str, output_string: str, pattern: dict, letter_i
     if not type(words) == set:
         raise TypeError("Argument 'words' of this function must be of type set.\n")
 
+    # TODO ETAOIN must be replaced by an argument variable, [to support other languages as well]
     # list most frequent English characters
     candidates = list(ETAOIN[1:7])
     # get high frequency letters
     high_frequency = letter_sequence[1:7]
     # initializing dictionaries
-    repaired = defaultdict(str)
-    dictionary = defaultdict(list)
+    repaired = defaultdict(set)
+    test_dictionary = defaultdict(list)
 
-    # TODO document this part
+    # TODO document this part, [HELL NO! I can explain it to anyone with voice but I just don't want to write it]
     for letter in high_frequency:
         test_word_list = list()
         for index in letter_index_map[letter]:
@@ -320,7 +395,7 @@ def test_high_frequency(string: str, output_string: str, pattern: dict, letter_i
                 get_word_from_index(output_string, index)
             ])
         if not TrueTextDetector.is_true_text(' '.join([test_case[1] for test_case in test_word_list]), words):
-            dictionary[letter] = [
+            test_dictionary[letter] = [
                 test_case for test_case in test_word_list
                 if len(test_case[1]) == 2 or len(test_case[1]) == 3 or len(test_case[1]) == 4
             ]
@@ -330,10 +405,10 @@ def test_high_frequency(string: str, output_string: str, pattern: dict, letter_i
             except ValueError:
                 pass
 
-    for letter in dictionary:
+    for letter in test_dictionary:
         for candidate in candidates:
             candidate_word_set = set()
-            candidate_case_list = dictionary[letter]
+            candidate_case_list = test_dictionary[letter]
             for case in candidate_case_list:
                 letter_list = list(case[1])
                 for index in case[0][letter]:
@@ -345,19 +420,15 @@ def test_high_frequency(string: str, output_string: str, pattern: dict, letter_i
             for word in candidate_word_set:
                 if word in frequent_words[candidate]:
                     counter += 1
-            # if more than 60% was correct, assign the candidate to cipher letter
+            # if more than 50% was correct, assign the candidate to cipher letter
             #  and remove candidate from future loop
-            if len(candidate_word_set) != 0 and counter / len(candidate_word_set) > 0.6:
-                repaired[letter] = candidate
+            # TODO replace the hard coded 0.5 value with a variable
+            if len(candidate_word_set) != 0 and counter / len(candidate_word_set) > 0.5:
+                repaired[letter].add(candidate)
                 candidates.remove(candidate)
                 break
     # return repaired cipher-letter to plain-letter dictionary
     return dict(repaired)
-
-
-# TODO something for the future
-def letter_sequence_repair(sting: str, letter_sequence: str):
-    pass
 
 
 def shallow_set_copy(input_set: set) -> set:
