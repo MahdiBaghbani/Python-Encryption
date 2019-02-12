@@ -16,10 +16,13 @@ def main():
 
     parser = argparse.ArgumentParser(description='This is Shift Cipher Hack module')
 
-    # input and output options and paths
-    parser.add_argument('-i', '--input', help='Input file path')
+    # input options [Required]
+    input_mode = parser.add_mutually_exclusive_group(required=True)
+    input_mode.add_argument('-i', '--input', help='Input file path')
+    input_mode.add_argument('-t', '--text', help='Text to be hacked')
+
+    # output option
     parser.add_argument('-o', '--output', help='Output file path')
-    parser.add_argument('-t', '--text', help='Text to be hacked')
 
     # letter sequence
     parser.add_argument('-l', '--letters', type=str, default=LETTERS, help='letter sequence')
@@ -41,67 +44,45 @@ def main():
     parser.add_argument('-s', '--seed', type=int, default=0,
                         help='Specify maximum range of  seed for shuffling letter sequence')
     parser.add_argument('-sh', '--shuffle', action='store_true', default=False, help='Shuffle letter sequence')
-    group = parser.add_mutually_exclusive_group(required=True)
+    hack_mode = parser.add_mutually_exclusive_group(required=True)
 
     # type of decryption
-    group.add_argument('-bf', '--bruteForce', action='store_true', help='Brute-Force technique')
-    group.add_argument('-fa', '--frequencyAnalyzer', action='store_true', help='Frequency analyzing technique')
+    hack_mode.add_argument('-bf', '--bruteForce', action='store_true', help='Brute-Force technique')
+    hack_mode.add_argument('-fa', '--frequencyAnalyzer', action='store_true', help='Frequency analyzing technique')
     args = parser.parse_args()
 
-    # hacking procedure
-    if args.input and args.output:
+    # load input with respect to user selected mode
+    if args.input:
         input_text = io_library.reader(args.input, 't', args.max_lines)
-        output_text = shift_hack(input_text, args.letters, args.seed, args.dictionary, args.pattern_dictionary,
-                                 args.frequent_unordered_word_dict, args.shuffle, args.bruteForce,
-                                 args.frequencyAnalyzer, args.verbose, args.show_key)
-        if args.show_key:
-            if output_text[0] == FAILED:
-                print("Failed to hack Cipher")
-                exit(1)
-            else:
+    else:
+        input_text = args.text
+
+    # do hacking process and get an output
+    output_text = shift_hack(input_text, args.letters, args.seed, args.dictionary, args.pattern_dictionary,
+                             args.frequent_unordered_word_dict, args.shuffle, args.bruteForce,
+                             args.frequencyAnalyzer, args.verbose, args.show_key)
+
+    # show user the result
+    if args.show_key:
+        if output_text[0] == FAILED:
+            print("Failed to hack Cipher")
+            exit(1)
+        else:
+            if args.output:
                 io_library.writer(args.output, output_text[0], 't')
                 io_library.writer(args.output + '_KEY.txt', output_text[1], 't')
-        else:
-            if output_text[0] == FAILED:
-                print("Failed to hack Cipher")
-                exit(1)
-            io_library.writer(args.output, output_text, 't')
-
-    elif args.input:
-        input_text = io_library.reader(args.input, 't', args.max_lines)
-        output_text = shift_hack(input_text, args.letters, args.seed, args.dictionary, args.pattern_dictionary,
-                                 args.frequent_unordered_word_dict, args.shuffle, args.bruteForce,
-                                 args.frequencyAnalyzer, args.verbose, args.show_key)
-        if args.show_key:
-            if output_text[0] == FAILED:
-                print("Failed to hack Cipher")
-                exit(1)
             else:
-                print(output_text[0])
-        else:
-            if output_text[0] == FAILED:
-                print("Failed to hack Cipher")
-                exit(1)
-            print(output_text)
+                print(output_text[0], end='\n\n')
 
-    elif args.text:
-        output_text = shift_hack(args.text, args.letters, args.seed, args.dictionary, args.pattern_dictionary,
-                                 args.frequent_unordered_word_dict, args.shuffle, args.bruteForce,
-                                 args.frequencyAnalyzer, args.verbose, args.show_key)
-        if args.show_key:
-            if output_text[0] == FAILED:
-                print("Failed to hack Cipher")
-                exit(1)
-            else:
-                print(output_text[0])
-        else:
-            if output_text[0] == FAILED:
-                print("Failed to hack Cipher")
-                exit(1)
-            print(output_text)
-
+            print(output_text[1])
     else:
-        raise ValueError("You have to define arguments [-i -o] or -t\n")
+        if output_text == FAILED:
+            print("Failed to hack Cipher")
+            exit(1)
+        if args.output:
+            io_library.writer(args.output, output_text, 't')
+        else:
+            print(output_text)
 
 
 def shift_hack(cipher_text: str, letter_sequence: str, seed: int, dictionary_path: str, pattern_dictionary_path: str,
@@ -123,6 +104,7 @@ def shift_hack(cipher_text: str, letter_sequence: str, seed: int, dictionary_pat
     :param show_key: show key after successfully hacking cipher via brute-force method
     """
 
+    # switch between methods
     if bruteforce:
         # maximum seed for bruteforce
         if seed:
@@ -133,7 +115,7 @@ def shift_hack(cipher_text: str, letter_sequence: str, seed: int, dictionary_pat
                 # brute-force
                 plain_set = brute_force(cipher_text, letter_sequence, i, dictionary_path, shuffle=True,
                                         verbose=verbose, show_key=show_key)
-                # return hacked text
+                # return plain_set if it's not FAILED
                 if show_key and plain_set[0] != FAILED:
                     return plain_set
                 elif not show_key and plain_set != FAILED:
@@ -177,7 +159,6 @@ def brute_force(cipher_text: str, letter_sequence: str, seed: int, dictionary_pa
             if show_key:
                 key_set = "Seed: {}\nKey: {}\nShuffle: {}\nLetter sequence: {}".format(seed, i, shuffle,
                                                                                        letter_sequence)
-                print(key_set)
                 return probable_plain_text, key_set
             # return plain-text
             return probable_plain_text
@@ -209,10 +190,10 @@ def analyze(cipher_text: str, dictionary_path: str, pattern_dictionary_path: str
 
 def analyzer_process(string: str, pattern_dictionary: dict, frequent_unordered_words_dict: dict, words: set) -> str:
     """
-    Reconstructs a plain-text by using a pattern dictionary of the cipher-text
+    Reconstructs a plain-text by using a letter_map dictionary of the cipher-text
 
     :param string: cipher-text to be decrypted
-    :param pattern_dictionary: decrypt letter pattern
+    :param pattern_dictionary: decrypt letter letter_map
     :param frequent_unordered_words_dict: a dictionary of frequent unordered words
     :param words: set of word for TrueTextDetector module
     :return: plain-text string
@@ -222,49 +203,38 @@ def analyzer_process(string: str, pattern_dictionary: dict, frequent_unordered_w
     if not type(string) == str:
         raise TypeError("Argument 'string' of this function must be of type string")
 
-    # get frequency of letters in string
-    frequency = FrequencyAnalyzer.get_letter_frequency_order(string)
+    # get cipher_letter_frequency of letters in string
+    cipher_letter_frequency = FrequencyAnalyzer.get_letter_frequency_order(string)
 
     # the most frequent letter in a cipher-text is always mapped to space (' ') in plain-text <"ASSUMPTION">
-    space = frequency[0]
+    space = cipher_letter_frequency[0]
 
-    # get index dictionary of letters in cipher text,
+    # get letter_index_map dictionary of letters in cipher text,
     # this must be done before replacing most frequent letter with space!
-    index = TextAnalyzer.index_mapper(string, 'letter', frequency)
+    letter_index_map = TextAnalyzer.index_mapper(string, 'letter', cipher_letter_frequency)
 
-    # get pattern of words in the string
-    pattern = TextAnalyzer.pattern_mapper(string, pattern_dictionary, space, frequency)
+    # get letter_map of words in the string
+    letter_map = TextAnalyzer.pattern_mapper(string, pattern_dictionary, space, cipher_letter_frequency)
 
-    # replace the cipher-letter mapped to space with space, this must be done after pattern analysis,
+    # replace the cipher-letter mapped to space with space, this must be done after letter_map analysis,
     # to avoid analysis jamming
     string = string.replace(space, ' ')
 
-    # create a blank text with length equal to cipher-text
-    output_string = ['_'] * len(string)
+    # create an output based on letter_map and letter_index_map
+    output_string = TextAnalyzer.string_filler(letter_map, letter_index_map, string_length=len(string))
 
-    # replace '_' with space in output
-    for i in index[space]:
-        output_string[i] = ' '
+    # test high cipher_letter_frequency letters and repair them if their mapped plain-letter are wrong
+    repaired_map_dict = TextAnalyzer.test_high_frequency(string, ''.join(output_string), letter_map, letter_index_map,
+                                                         cipher_letter_frequency, frequent_unordered_words_dict, words)
 
-    # loop to reconstruct plain-txt from solved cipher-letters
-    for letter in pattern.keys():
-        # if the cipher-letter "letter" is solved, it's corresponding set must be of size 1
-        if letter != space and len(pattern[letter]) == 1:
-            # extract plain-letter from set
-            plain_letter = next(iter(pattern[letter]))
-            # use indexes of cipher-letter "letter" in cipher-text to place plain-letter in correct position
-            for i in index[letter]:
-                output_string[i] = plain_letter
-    # test high frequency letters and repair them if their mapped plain-letter is wrong
-    repaired_dict = TextAnalyzer.test_high_frequency(string, ''.join(output_string), pattern, index, frequency,
-                                                     frequent_unordered_words_dict, words)
-    # replace repaired letter in plain-text
-    for letter in repaired_dict:
-        for i in index[letter]:
-            output_string[i] = repaired_dict[letter]
+    # repair letter_map with repaired_map_dict
+    letter_map = TextAnalyzer.repair_mapping(letter_map, repaired_map_dict, cipher_letter_frequency)
+
+    # refill the out_put string based on newly repaired letter_map and same letter_index_map as before
+    output_string = TextAnalyzer.string_filler(letter_map, letter_index_map, string=output_string)
 
     # replace every 10th space with newline
-    for i, j in enumerate(index[space]):
+    for i, j in enumerate(letter_index_map[space]):
         if i % 10 == 0 and i != 0:
             output_string[j] = '\n'
 
